@@ -1,3 +1,5 @@
 include whisperx/assets/*
 include LICENSE
-include requirements.txt
+include WINDOWS_SETUP.md
+include CUDNN_TROUBLESHOOTING.md
+include EXAMPLES.md

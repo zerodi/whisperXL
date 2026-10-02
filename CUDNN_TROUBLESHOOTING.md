@@ -1,10 +1,16 @@
 # Troubleshooting cuDNN Loading Errors
 
-This guide helps resolve common cuDNN-related errors when running WhisperX on GPU. These issues typically occur when the system can't locate cuDNN libraries or finds conflicting versions.
+For this checkout's Windows stack, start with [WINDOWS_SETUP.md](WINDOWS_SETUP.md).
+PyTorch uses CUDA 12.8, while CTranslate2 4.8 requires CUDA 12 cuBLAS and does not
+require cuDNN. Check those runtimes separately. The historical Linux cuDNN
+instructions below apply to older CTranslate2 versions and PyTorch runtime
+conflicts; they are not the Windows installation procedure.
+
+This guide helps resolve common cuDNN-related errors when running whisperxl on GPU. These issues typically occur when the system can't locate cuDNN libraries or finds conflicting versions.
 
 ## Unable to Load cuDNN Libraries
 
-If you encounter the following error when running WhisperX:
+If you encounter the following error when running whisperxl:
 
 `Unable to load any of {libcudnn_cnn.so.9.1.0, libcudnn_cnn.so.9.1, libcudnn_cnn.so.9, libcudnn_cnn.so}`
 

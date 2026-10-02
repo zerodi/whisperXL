@@ -19,6 +19,19 @@ from whisperx.log_utils import get_logger
 
 logger = get_logger(__name__)
 
+# faster-whisper2 retains the faster_whisper module but dropped these aliases.
+_LEGACY_MODEL_NAMES = {
+    "large": "large-v3",
+    "large-v1": "Systran/faster-whisper-large-v1",
+    "large-v2": "Systran/faster-whisper-large-v2",
+    "distil-large-v2": "Systran/faster-distil-whisper-large-v2",
+}
+
+
+def _resolve_model_name(name: str) -> str:
+    # Existing local model directories always take precedence over aliases.
+    return name if os.path.isdir(name) else _LEGACY_MODEL_NAMES.get(name, name)
+
 
 def find_numeral_symbol_tokens(tokenizer):
     numeral_symbol_tokens = []
@@ -308,6 +321,14 @@ class FasterWhisperPipeline(Pipeline):
             onset=self._vad_params["vad_onset"],
             offset=self._vad_params["vad_offset"],
         )
+        if not vad_segments:
+            language = language or self.preset_language
+            if language is None:
+                language = self.tokenizer.language_code if self.tokenizer is not None else self.detect_language(audio)
+            if progress_callback is not None:
+                progress_callback(100.0)
+            return {"segments": [], "language": language}
+
         if self.tokenizer is None:
             language = language or self.detect_language(audio)
             task = task or "transcribe"
@@ -501,7 +522,7 @@ def load_model(
     if whisper_arch.endswith(".en"):
         language = "en"
 
-    model = model or WhisperModel(whisper_arch,
+    model = model or WhisperModel(_resolve_model_name(whisper_arch),
                          device=device,
                          device_index=device_index,
                          compute_type=compute_type,
